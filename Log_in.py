@@ -6,27 +6,42 @@ usuarios = {}
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
+def registrar_interno(usuario, password):
+    if usuario in usuarios:
+        return False
+
+    usuarios[usuario] = hash_password(password)
+    return True
+
 def registrar():
     print("\n=== REGISTRO ===")
     usuario = input("Usuario: ")
     password = input("Contraseña: ")
 
-    if usuario in usuarios:
+    resultado = registrar_interno(usuario, password)
+    if resultado == True:
+        print("Usuario registrado correctamente.")
+    else:
         print("Ese usuario ya existe.")
-        return
+    return resultado
 
-    usuarios[usuario] = hash_password(password)
-    print("Usuario registrado correctamente.")
-
+def login_interno(usuario, password):
+    if usuario in usuarios and usuarios[usuario] == hash_password(password):
+        return True
+    else:
+        return False
+    
 def login():
     print("\n=== LOGIN ===")
     usuario = input("Usuario: ")
     password = input("Contraseña: ")
 
-    if usuario in usuarios and usuarios[usuario] == hash_password(password):
+    resultado = login_interno(usuario,password)
+    if resultado == True:
         print("Login exitoso 🎉")
     else:
         print("Usuario o contraseña incorrectos.")
+    return resultado
 
 def menu():
     while True:
@@ -39,11 +54,13 @@ def menu():
         if opcion == "1":
             registrar()
         elif opcion == "2":
-            login()
+            if login() == True:
+                return True
         elif opcion == "3":
             print("¡Hasta pronto! 👋")
-            break
+            return False
         else:
             print("Opción inválida")
 
-menu()
+if __name__ =="__main__":
+    menu()
